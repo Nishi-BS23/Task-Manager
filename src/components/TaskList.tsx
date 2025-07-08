@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { deleteTask, getTasks } from "../api/tasks";
 import type { Task } from "../types/Task";
 import TaskForm from "./TaskForm";
 
@@ -11,21 +11,21 @@ const TaskList = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    const BASE_URL = "http://localhost:3001";
-    const getTaks = async () => {
-        const reponse = await axios.get(`${BASE_URL}/tasks`);
-        return reponse.data;
-    };
-    const deleteTask = async (id: number) => {
-        return await axios.delete(`${BASE_URL}/tasks/${id}`)
-    }
+    // const BASE_URL = "http://localhost:3001";
+    // const getTasks = async () => {
+    //     const reponse = await axios.get(`${BASE_URL}/tasks`);
+    //     return reponse.data;
+    // };
+    // const deleteTask = async (id: number) => {
+    //     return await axios.delete(`${BASE_URL}/tasks/${id}`)
+    // }
     const {
         data: tasks,
         isLoading,
         isError,
     } = useQuery({
         queryKey: ["tasks"],
-        queryFn: getTaks,
+        queryFn: getTasks,
     });
 
     const deleteMutation = useMutation({
@@ -56,7 +56,7 @@ const TaskList = () => {
     return (
         <div className="bg-gray-300 m-7">
             <h1 className="text-2xl">Task List</h1>
-            {tasks.length === 0 ? (
+            {tasks?.length === 0 ? (
                 <p className="text-center">No tasks found.</p>
             ) : (
                 <table className="w-full">
@@ -70,7 +70,7 @@ const TaskList = () => {
                     </thead>
                     <tbody className="bg-gray-200">
                         {
-                            tasks.map((task: Task) => (
+                            tasks?.map((task: Task) => (
                                 <tr key={task.id}>
                                     <td className="px-4 py-2 border-b">
                                         {task.fullName}

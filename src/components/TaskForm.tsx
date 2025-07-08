@@ -1,9 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { createTask, updateTask } from "../api/tasks";
 import { schema } from "../types/Schema";
 import type { Task } from "../types/Task";
 
@@ -14,9 +14,7 @@ interface TaskFormProps {
 }
 
 const TaskForm = ({ initialData, taskId, onClose }: TaskFormProps) => {
-    const BASE_URL = "http://localhost:3001";
     const queryClient = useQueryClient();
-
     const {
         register,
         handleSubmit,
@@ -37,9 +35,9 @@ const TaskForm = ({ initialData, taskId, onClose }: TaskFormProps) => {
 
     const mutationFn = async (data: Task) => {
         if (taskId) {
-            return await axios.put(`${BASE_URL}/tasks/${taskId}`, data);
+            return await updateTask(taskId, data);
         } else {
-            return await axios.post(`${BASE_URL}/tasks`, data);
+            return await createTask(data);
         }
     };
 
