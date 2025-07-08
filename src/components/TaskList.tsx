@@ -3,10 +3,12 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { Task } from "../types/Task";
+import TaskForm from "./TaskForm";
 
 const TaskList = () => {
     const queryClient = useQueryClient();
 
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const BASE_URL = "http://localhost:3001";
@@ -39,6 +41,10 @@ const TaskList = () => {
         setSelectedTask(task);
         setDeleteModalOpen(true);
     }
+    const openEditModal = (task: Task) => {
+        setSelectedTask(task);
+        setEditModalOpen(true);
+    }
     const confirmDelete = () => {
         if (selectedTask) deleteMutation.mutate(selectedTask.id);
     }
@@ -62,7 +68,7 @@ const TaskList = () => {
                             <th className="p-3">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="bg-gray-200">
                         {
                             tasks.map((task: Task) => (
                                 <tr key={task.id}>
@@ -76,7 +82,7 @@ const TaskList = () => {
                                         {task.description}
                                     </td>
                                     <td className="px-4 py-2 border-b">
-                                        <button className="text-blue-600 hover:underline hover:cursor-pointer px-1 rounded">
+                                        <button onClick={() => openEditModal(task)} className="text-blue-600 hover:underline hover:cursor-pointer px-1 rounded">
                                             Edit
                                         </button>
                                         <button onClick={() => openDeleteModal(task)}
@@ -90,6 +96,23 @@ const TaskList = () => {
                     </tbody>
                 </table>
             )}
+            {editModalOpen && selectedTask && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-xl">
+                        <h2 className="text-xl font-bold mb-4">Edit Task</h2>
+                        <TaskForm
+                            initialData={{
+                                fullName: selectedTask.fullName,
+                                title: selectedTask.title,
+                                description: selectedTask.description,
+                            }}
+                            taskId={selectedTask.id}
+                            onClose={() => setEditModalOpen(false)}
+                        />
+                    </div>
+                </div>
+            )}
+
             {deleteModalOpen && selectedTask && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl text-center">
