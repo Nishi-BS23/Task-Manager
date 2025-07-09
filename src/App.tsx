@@ -1,7 +1,9 @@
 import { Toaster } from 'react-hot-toast'
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
+import Login from './components/Login'
 import Home from './pages/Home'
+import PrivateRoute from './routes/PrivateRoute'
 
 function App() {
 
@@ -9,7 +11,15 @@ function App() {
     <>
       <Toaster position="top-right" />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </>
   )

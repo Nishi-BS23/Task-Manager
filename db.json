@@ -2,33 +2,15 @@
   "tasks": [
     {
       "id": "2",
-      "fullName": "Kanta",
-      "title": "Sample Task 20",
-      "description": "Another sample task 70."
+      "fullName": "Bob",
+      "title": "Read Book",
+      "description": "Chapter 3"
     },
     {
-      "id": "1751956368752",
-      "fullName": "Nishi",
-      "title": "d",
-      "description": "d"
-    },
-    {
-      "id": "1751976924137",
-      "fullName": "gfh",
-      "title": "gh",
-      "description": "gf"
-    },
-    {
-      "id": "1751979895879",
-      "fullName": "fd",
-      "title": "fd",
-      "description": "fd"
-    },
-    {
-      "id": "1751979948326",
-      "fullName": "v",
-      "title": "xc",
-      "description": "xcfdv"
+      "id": "3",
+      "fullName": "Carol",
+      "title": "Fix Bike",
+      "description": "Replace tire"
     }
   ]
 }

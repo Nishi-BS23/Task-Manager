@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { deleteTask, getTasks } from "../api/tasks";
+import { useDebounce } from "../hooks/useDebounce";
 import type { Task } from "../types/Task";
 import TaskForm from "./TaskForm";
 
@@ -11,21 +12,16 @@ const TaskList = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    // const BASE_URL = "http://localhost:3001";
-    // const getTasks = async () => {
-    //     const reponse = await axios.get(`${BASE_URL}/tasks`);
-    //     return reponse.data;
-    // };
-    // const deleteTask = async (id: number) => {
-    //     return await axios.delete(`${BASE_URL}/tasks/${id}`)
-    // }
+    const [searchTitle, setSearchTitle] = useState("");
+
+    const debounceSearchTitle = useDebounce(searchTitle, 500);
     const {
         data: tasks,
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ["tasks"],
-        queryFn: getTasks,
+        queryKey: ["tasks", debounceSearchTitle],
+        queryFn: () => getTasks(debounceSearchTitle),
     });
 
     const deleteMutation = useMutation({
@@ -56,6 +52,21 @@ const TaskList = () => {
     return (
         <div className="bg-gray-300 m-7">
             <h1 className="text-2xl">Task List</h1>
+            <div className="m-3 flex items-center">
+                <input
+                    type="text"
+                    value={searchTitle}
+                    className="border rounded px-3 bg-gray-100"
+                    placeholder="Search by title"
+                    onChange={(e) => {
+                        const input = e.target.value;
+                        if (searchTitle === '' && input.startsWith(' ')) {
+                            return;
+                        }
+                        setSearchTitle(input);
+                    }}
+                />
+            </div>
             {tasks?.length === 0 ? (
                 <p className="text-center">No tasks found.</p>
             ) : (

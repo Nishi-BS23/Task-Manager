@@ -2,8 +2,10 @@ import { api } from "../lib/api";
 import type { Task } from "../types/Task";
 
 // Get all tasks
-export const getTasks = async (): Promise<Task[]> => {
-  const res = await api.get("/tasks");
+export const getTasks = async (searchTitle?: string): Promise<Task[]> => {
+  const res = await api.get("/tasks", {
+    params: searchTitle?.trim() ? { title_like: searchTitle.trim() } : {},
+  });
   return res.data;
 };
 
