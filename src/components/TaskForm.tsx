@@ -9,7 +9,7 @@ import type { Task } from "../types/Task";
 
 interface TaskFormProps {
     initialData?: Omit<Task, "id">;
-    taskId?: number;
+    taskId?: string;
     onClose?: () => void;
 }
 
@@ -57,7 +57,7 @@ const TaskForm = ({ initialData, taskId, onClose }: TaskFormProps) => {
 
     const onSubmit = (data: Omit<Task, "id">) => {
         const finalData: Task = {
-            id: taskId ?? Date.now(),
+            id: taskId ?? Date.now().toString(),
             ...data,
         };
         mutate(finalData);
