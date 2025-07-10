@@ -2,11 +2,22 @@ import { api } from "../lib/api";
 import type { Task } from "../types/Task";
 
 // Get all tasks
-export const getTasks = async (searchTitle?: string): Promise<Task[]> => {
-  const res = await api.get("/tasks", {
-    params: searchTitle?.trim() ? { title_like: searchTitle.trim() } : {},
-  });
-  return res.data;
+export const getTasks = async (
+  searchTitle?: string,
+  page: number = 1,
+  pageSize: number = 5
+): Promise<{ tasks: Task[]; total: number }> => {
+  const params: any = {
+    _page: page,
+    _limit: pageSize,
+  };
+  if (searchTitle?.trim()) {
+    params.title_like = searchTitle.trim();
+  }
+  const res = await api.get("/tasks");
+  console.log("Headers:", res);
+  const total = res.data.length;
+  return { tasks: res.data, total };
 };
 
 // Create a task

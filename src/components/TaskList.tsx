@@ -13,16 +13,24 @@ const TaskList = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [searchTitle, setSearchTitle] = useState("");
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(5);
 
     const debounceSearchTitle = useDebounce(searchTitle, 500);
     const {
-        data: tasks,
+        data,
         isLoading,
         isError,
-    } = useQuery({
-        queryKey: ["tasks", debounceSearchTitle],
-        queryFn: () => getTasks(debounceSearchTitle),
+    } = useQuery<{ tasks: Task[]; total: number }, Error>({
+        queryKey: ["tasks", debounceSearchTitle, page, pageSize],
+        queryFn: () => getTasks(debounceSearchTitle, page, pageSize),
     });
+    console.log(data)
+    // tasks and total count from API
+    const tasks = data?.tasks ?? [];
+    const total = data?.total ?? 0;
+    const totalPages = Math.ceil(total / pageSize);
 
     const deleteMutation = useMutation({
         mutationFn: deleteTask,
@@ -70,42 +78,62 @@ const TaskList = () => {
             {tasks?.length === 0 ? (
                 <p className="text-center">No tasks found.</p>
             ) : (
-                <table className="w-full">
-                    <thead className="bg-amber-100">
-                        <tr>
-                            <th className="p-3">Full Name</th>
-                            <th className="p-3">Title</th>
-                            <th className="p-3">Descrption</th>
-                            <th className="p-3">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-gray-200">
-                        {
-                            tasks?.map((task: Task) => (
-                                <tr key={task.id}>
-                                    <td className="px-4 py-2 border-b">
-                                        {task.fullName}
-                                    </td>
-                                    <td className="px-4 py-2 border-b">
-                                        {task.title}
-                                    </td>
-                                    <td className="px-4 py-2 border-b">
-                                        {task.description}
-                                    </td>
-                                    <td className="px-4 py-2 border-b">
-                                        <button onClick={() => openEditModal(task)} className="text-blue-600 hover:underline hover:cursor-pointer px-1 rounded">
-                                            Edit
-                                        </button>
-                                        <button onClick={() => openDeleteModal(task)}
-                                            className="text-red-600 hover:underline hover:cursor-pointer px-1 rounded">
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </table>
+                <>
+                    <table className="w-full">
+                        <thead className="bg-amber-100">
+                            <tr>
+                                <th className="p-3">Full Name</th>
+                                <th className="p-3">Title</th>
+                                <th className="p-3">Descrption</th>
+                                <th className="p-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-gray-200">
+                            {
+                                tasks?.map((task: Task) => (
+                                    <tr key={task.id}>
+                                        <td className="px-4 py-2 border-b">
+                                            {task.fullName}
+                                        </td>
+                                        <td className="px-4 py-2 border-b">
+                                            {task.title}
+                                        </td>
+                                        <td className="px-4 py-2 border-b">
+                                            {task.description}
+                                        </td>
+                                        <td className="px-4 py-2 border-b">
+                                            <button onClick={() => openEditModal(task)} className="text-blue-600 hover:underline hover:cursor-pointer px-1 rounded">
+                                                Edit
+                                            </button>
+                                            <button onClick={() => openDeleteModal(task)}
+                                                className="text-red-600 hover:underline hover:cursor-pointer px-1 rounded">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                    {/* Pagination Controls */}
+                    <div className="flex justify-center items-center mt-4 space-x-2">
+                        <button
+                            className="px-3 py-1 bg-gray-400 rounded disabled:opacity-50"
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                        >
+                            Previous
+                        </button>
+                        <span>Page {page} of {totalPages || 1}</span>
+                        <button
+                            className="px-3 py-1 bg-gray-400 rounded disabled:opacity-50"
+                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages || totalPages === 0}
+                        >
+                            Next
+                        </button>
+                    </div>
+                </>
             )}
             {editModalOpen && selectedTask && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
