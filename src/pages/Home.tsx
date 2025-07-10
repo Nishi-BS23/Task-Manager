@@ -27,6 +27,7 @@ const Home = () => {
             </div>
             <TaskForm />
             <TaskList />
+            {/* <DataTableDemo /> */}
         </div>
     );
 };
