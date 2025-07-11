@@ -43,7 +43,10 @@ const TaskList = () => {
     const [pageSize] = useState(5);
 
     const debounceSearchTitle = useDebounce(searchTitle, 500);
-    const { data, isLoading, isError } = useQuery<{ tasks: Task[]; total: number }, Error>({
+    const { data, isLoading, isError } = useQuery<
+        { tasks: Task[]; total: number },
+        Error
+    >({
         queryKey: ["tasks", debounceSearchTitle, page, pageSize],
         queryFn: () => getTasks(debounceSearchTitle, page, pageSize),
     });
@@ -84,7 +87,7 @@ const TaskList = () => {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             ),
-            cell: ({ row }) => <div >{row.getValue("fullName")}</div>,
+            cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
         },
         {
             accessorKey: "title",
@@ -157,7 +160,9 @@ const TaskList = () => {
     if (isLoading) return <div className="text-center">Loading...</div>;
     if (isError) {
         toast.error("Failed to load tasks");
-        return <div className="text-center text-destructive">Something went wrong.</div>;
+        return (
+            <div className="text-center text-destructive">Something went wrong.</div>
+        );
     }
 
     return (
@@ -184,7 +189,10 @@ const TaskList = () => {
                                     <TableHead key={header.id}>
                                         {header.isPlaceholder
                                             ? null
-                                            : flexRender(header.column.columnDef.header, header.getContext())}
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
                                     </TableHead>
                                 ))}
                             </TableRow>
@@ -196,14 +204,20 @@ const TaskList = () => {
                                 <TableRow key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
                                         </TableCell>
                                     ))}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
                                     No tasks found.
                                 </TableCell>
                             </TableRow>
@@ -264,7 +278,8 @@ const TaskList = () => {
                         <DialogTitle>Delete Task</DialogTitle>
                     </DialogHeader>
                     <p className="mb-4">
-                        Are you sure you want to delete the task: <b>{selectedTask?.title}</b>?
+                        Are you sure you want to delete the task:{" "}
+                        <b>{selectedTask?.title}</b>?
                     </p>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setDeleteModalOpen(false)}>
